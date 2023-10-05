@@ -16,12 +16,24 @@
 
         require_once "./connection.php";
 
-        if ($ruta == "customers") {
-            require_once "routes/customer.route.php";
+        if ($ruta == "article") {
+            require_once "routes/article.route.php";
             return;
         }
-        if ($ruta == "books") {
-            require_once "routes/book.route.php";
+        if ($ruta == "category") {
+            require_once "routes/category.route.php";
+            return;
+        }
+        if ($ruta == "sales") {
+            require_once "routes/sales.route.php";
+            return;
+        }
+        if ($ruta == "sales-detail") {
+            require_once "routes/salesDetail.route.php";
+            return;
+        }
+        if ($ruta == "warehouse") {
+            require_once "routes/warehouse.route.php";
             return;
         }
 

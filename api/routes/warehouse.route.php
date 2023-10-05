@@ -1,6 +1,6 @@
 <?php
-    require_once "./controllers/books.php";
-    $object = new Books();
+    require_once "./controllers/warehouse.php";
+    $object = new Warehouse();
 
     function errorResponse($message = null){
         global $uri;
@@ -13,6 +13,10 @@
     }
 
     if($method == "GET"){
+        if(preg_match('/^available$/', $my_route)){
+            $object->getAvailable();
+            return;
+        }
         if(preg_match('/^\d+$/', $my_route)){
             $object->show($rutas[0]);
             return;

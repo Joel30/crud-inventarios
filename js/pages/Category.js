@@ -1,19 +1,51 @@
 
-import Table from "../components/Table.js";
 import { request } from "../utils/request.js";
 
-let container = document.createElement("div");
+const URL = "./api/category/";
 
+let table =  (data) => {
+    let rows = ``;
+    for (const column of data) {
+        let actions = `
+            <button class="btn btn-warning btn-sm" title="Editar" data-id="${column.id}">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="btn btn-danger btn-sm" title="Eliminar" data-id="${column.id}">
+                <i class="bi bi-trash3-fill"></i>
+            </button>`;
+            console.log(column);
 
+        rows += `<tr>
+            <td>${column.nombre}</td>
+            <td>${column.descripcion}</td>
+            <td nowrap>${actions}</td>
+        </tr>`;
+    }
+    return `        
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="list_category">
+                ${
+                    rows ? rows : `<tr> <td colspan="100%" class="text-center" >No se encontraron registros</td></tr>`
+                }
+                </tbody>
+            </table>
+        </div>`;
+}
 
-
-
-let Books = async () => {
+let listCategories = async () => {
     
-    let {data} = await fetch("./api/books").then(r => r.json());
+    let {data} = await fetch(`${URL}`).then(r => r.json());
 
     return `<div class="col-md-12">
-        <h4 class="pb-2 ps-3">Libros</h4>
+        <h4 class="pb-2 ps-3">Categorías</h4>
         
         <div class="card">
             <div class="card-body" id="container-books">
@@ -23,33 +55,23 @@ let Books = async () => {
                         Nuevo
                     </button>
                 </div>
-                ${Table("", data)}
+                ${table(data)}
             </div>
         </div>
     </div>`;
 } 
 
-let newBook = `
+let newCategory = `
     <div class="card-body">
         <form class="row g-3" id="form_new">
             <div class="col-md-4">
-                <label for="book_category" class="form-label">Categoría</label>
-                <input type="text" class="form-control" id="book_category" name="category" required>
+                <label for="cat_name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="cat_name" name="nombre" required>
                 <div class="invalid-feedback"> </div>
             </div>
             <div class="col-md-4">
-                <label for="book_title" class="form-label">Título</label>
-                <input type="text" class="form-control" id="book_title" name="title" required>
-                <div class="invalid-feedback"> </div>
-            </div>
-            <div class="col-md-4">
-                <label for="book_author" class="form-label">Nombre de autor</label>
-                <input type="text" class="form-control" id="book_author" name="author" required>
-                <div class="invalid-feedback"> </div>
-            </div>
-            <div class="col-md-4">
-                <label for="book_price" class="form-label">Precio</label>
-                <input type="text" class="form-control" id="book_price" name="price" required>
+                <label for="cat_description" class="form-label">Descripción</label>
+                <input type="text" class="form-control" id="cat_description" name="descripcion" required>
                 <div class="invalid-feedback"> </div>
             </div>
 
@@ -71,9 +93,8 @@ let newBook = `
 
     </div>`;
 
-let editBook = async(id) => {
-    let {data} = await fetch(`./api/books/${id}`).then(r => r.json());
-    console.log(data);
+let editCategory = async(id) => {
+    let {data} = await fetch(`${URL}${id}`).then(r => r.json());
 
     return `
     <div class="card-body">
@@ -82,23 +103,13 @@ let editBook = async(id) => {
             <input type="hidden" name="_method" value="put">
         
             <div class="col-md-4">
-                <label for="book_category" class="form-label">Categoría</label>
-                <input type="text" class="form-control" id="book_category" value="${data.category}" name="category" required>
+                <label for="cat_name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="cat_name" value="${data.nombre}" name="nombre" required>
                 <div class="invalid-feedback"> </div>
             </div>
             <div class="col-md-4">
-                <label for="book_title" class="form-label">Título</label>
-                <input type="text" class="form-control" id="book_title" value="${data.title}" name="title" required>
-                <div class="invalid-feedback"> </div>
-            </div>
-            <div class="col-md-4">
-                <label for="book_author" class="form-label">Nombre de autor</label>
-                <input type="text" class="form-control" id="book_author" value="${data.author}" name="author" required>
-                <div class="invalid-feedback"> </div>
-            </div>
-            <div class="col-md-4">
-                <label for="book_price" class="form-label">Precio</label>
-                <input type="text" class="form-control" id="book_price" value="${data.price}" name="price" required>
+                <label for="cat_description" class="form-label">Descripción</label>
+                <input type="text" class="form-control" id="cat_description" value="${data.descripcion}" name="descripcion" required>
                 <div class="invalid-feedback"> </div>
             </div>
 
@@ -121,27 +132,8 @@ let editBook = async(id) => {
     </div>`;
 }
 
-const testAddings = (ref = document) => {
-    console.log({ref});
-    let button = ref.querySelector("#book-add-new");
-    let container = ref.querySelector("#container-books");
-    button.addEventListener("click", () => {
-        container.innerHTML = newBook;
-        let form = container.querySelector("#form_new");
-        let a = request(form,"./api/books", {container, Books});
-        console.log(a);
-
-        console.log("sdfsd");
-        // form.addEventListener("submit", (e) => {
-        //     e.preventDefault();
-        //     console.log("enviando ...");
-        // })
-    });
-    console.log(button);
-}
-
-const insertPageBook = async (ref = document) => {
-    ref.innerHTML = await Books()
+const Categories = async (ref = document) => {
+    ref.innerHTML = await listCategories()
     let container = ref.querySelector("#container-books");
 
 
@@ -150,15 +142,15 @@ const insertPageBook = async (ref = document) => {
     btnsEdit.forEach((button) => {
         button.addEventListener("click", async(e) => {
             let id  = button.dataset.id;
-            container.innerHTML = await editBook(id);
+            container.innerHTML = await editCategory(id);
             let form = container.querySelector("#form_edit");
-            let a = request(form,`./api/books/${id}`, {ref, insertPageBook});
+            let a = request(form,`${URL}${id}`, {ref, insertPageBook: Categories});
         })
     });
     btnsDelet.forEach((button) => {
         button.addEventListener("click", async(e) => {
             let id  = button.dataset.id;
-            let status = await fetch(`./api/books/${id}`, {method: 'DELETE'}).then(r => r.ok);
+            let status = await fetch(`${URL}${id}`, {method: 'DELETE'}).then(r => r.ok);
             if (status) {
                 var row = button.parentNode.parentNode;
                 row.remove();
@@ -168,10 +160,10 @@ const insertPageBook = async (ref = document) => {
 
     let button = ref.querySelector("#book-add-new");
     button.addEventListener("click", () => {
-        container.innerHTML = newBook;
+        container.innerHTML = newCategory;
         let form = container.querySelector("#form_new");
-        let a = request(form,"./api/books", {ref, insertPageBook});
+        request(form,`${URL}`, {ref, insertPageBook: Categories});
     });
 }
 
-export {Books, insertPageBook};
+export default Categories;

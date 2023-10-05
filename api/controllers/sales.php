@@ -1,9 +1,9 @@
 <?php
 
-class Books
+class Sales
 {
-    private $name = "books";
-    private $name_msg = "Libros";
+    private $name = "ventas";
+    private $name_msg = "Ventas";
 
     private $db;
     private $res;

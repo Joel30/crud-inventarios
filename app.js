@@ -1,6 +1,8 @@
 import {Navbar, activateItem} from "./js/components/Navbar.js"
-import {Customers} from "./js/pages/Customers.js";
-import {Books, insertPageBook} from "./js/pages/Books.js";
+
+import Warehouse from "./js/pages/Warehouse.js";
+import Categories from "./js/pages/Category.js";
+import Articles from "./js/pages/Articles.js";
 
 const app = document.getElementById("app");
 
@@ -10,9 +12,34 @@ container.setAttribute("class", "container pt-4");
 
 app.innerHTML = Navbar();
 
+let Home = `<h4 class="ms-3"> Home </h4>`;
+
+let current = localStorage.getItem("current");
+
+if (current) {
+    activateItem(current);
+
+    if (current == "ni-home") {
+        container.innerHTML = Home;
+    }
+    if (current == "ni-warehouse") {
+        Warehouse(container);
+    }
+    if (current == "ni-category") {
+        Categories(container);
+    }
+    if (current == "ni-articles") {
+        Articles(container);
+    }
+} else {
+    container.innerHTML = Home;
+}
+
 const addEvents = () => {
     let itemHome = document.getElementById("ni-home");
-    let itemCustomer = document.getElementById("ni-customer");
+    let itemWarehouse = document.getElementById("ni-warehouse");
+    let itemCategories = document.getElementById("ni-category");
+    let itemArticles = document.getElementById("ni-articles");
     let itemBooks = document.getElementById("ni-books");
 
     let currentPage = "";
@@ -21,31 +48,48 @@ const addEvents = () => {
         e.preventDefault();
         if (e.target.id != currentPage) {
             currentPage = e.target.id;
+
+            localStorage.setItem("current", currentPage);
             activateItem(currentPage);
-            container.innerHTML = Customers
-            
+
+            container.innerHTML = Home;
         }
     });
     
-    itemCustomer.addEventListener("click", (e) => {
+    itemWarehouse.addEventListener("click", (e) => {
         e.preventDefault();
         if (e.target.id != currentPage) {
             currentPage = e.target.id;
+
+            localStorage.setItem("current", currentPage);
             activateItem(currentPage);
-            container.innerHTML = Customers
+
+            Warehouse(container);
+        }
+    });
+    itemCategories.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (e.target.id != currentPage) {
+            currentPage = e.target.id;
+
+            localStorage.setItem("current", currentPage);
+            activateItem(currentPage);
+
+            Categories(container);
+        }
+    });
+    itemArticles.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (e.target.id != currentPage) {
+            currentPage = e.target.id;
+            
+            localStorage.setItem("current", currentPage);
+            activateItem(currentPage);
+
+            Articles(container);
         }
     });
     
-    itemBooks.addEventListener("click", async (e) => {
-        e.preventDefault();
-        if (e.target.id != currentPage) { 
-            currentPage = e.target.id;
-            activateItem(currentPage);
-
-            insertPageBook(container);
-
-        }
-    });
 }
 
 addEvents();

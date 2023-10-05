@@ -3,7 +3,7 @@
 
         public function __construct(){
             try {
-                parent::__construct("localhost", "root", "root", "bookstore");
+                parent::__construct("localhost", "root", "root", "inventarios");
             } catch (Throwable $e) {
                 if($this->connect_errno){
                     $res = [

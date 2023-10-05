@@ -12,10 +12,13 @@ export const Navbar = () => {
                         <a id="ni-home", class="nav-link active" href="./">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a id="ni-customer", class="nav-link" href="/clientes">Clientes</a>
+                        <a id="ni-warehouse", class="nav-link" href="/almacen">Almacen</a>
                     </li>
                     <li class="nav-item">
-                        <a id="ni-books", class="nav-link" href="./libros">Libros</a>
+                        <a id="ni-category", class="nav-link" href="/almacen">Categorias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="ni-articles", class="nav-link" href="/almacen">Artículos</a>
                     </li>
                 </ul>
             </div>
