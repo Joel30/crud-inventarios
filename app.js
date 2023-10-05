@@ -1,6 +1,6 @@
 import {Navbar, activateItem} from "./js/components/Navbar.js"
 import {Customers} from "./js/pages/Customers.js";
-import {Books, testAddings} from "./js/pages/Books.js";
+import {Books, insertPageBook} from "./js/pages/Books.js";
 
 const app = document.getElementById("app");
 
@@ -41,8 +41,8 @@ const addEvents = () => {
         if (e.target.id != currentPage) { 
             currentPage = e.target.id;
             activateItem(currentPage);
-            container.innerHTML = await Books()
-            testAddings(container);
+
+            insertPageBook(container);
 
         }
     });

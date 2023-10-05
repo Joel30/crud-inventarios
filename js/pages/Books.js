@@ -62,7 +62,7 @@ let newBook = `
                     </div>
                     <div class="col-md-auto pt-2 pt-md-0">
                         <div class="d-grid gap-2 mx-5 mx-md-0">
-                            <a class="btn btn-secondary px-1 px-md-4">Cancelar</a>
+                            <a id="form-cancel" class="btn btn-secondary px-1 px-md-4">Cancelar</a>
                         </div>
                     </div>
                 </div>
@@ -71,32 +71,55 @@ let newBook = `
 
     </div>`;
 
-let editBook = `
+let editBook = async(id) => {
+    let {data} = await fetch(`./api/books/${id}`).then(r => r.json());
+    console.log(data);
+
+    return `
     <div class="card-body">
-        <form class="row g-3" id="form_create">
+        <form class="row g-3" id="form_edit">
+
+            <input type="hidden" name="_method" value="put">
+        
             <div class="col-md-4">
-                <label for="hs_name" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="hs_name" name="nombre" required>
+                <label for="book_category" class="form-label">Categoría</label>
+                <input type="text" class="form-control" id="book_category" value="${data.category}" name="category" required>
                 <div class="invalid-feedback"> </div>
             </div>
             <div class="col-md-4">
-                <label for="hs_type" class="form-label">Acción</label>
-                <select id="hs_type" class="form-select" name="tipo" required>
-                    <option value> -- Elija una opción -- </option>
-                    <option value="1">Activar</option>
-                    <option value="0">Desactivar</option>
-                </select>
+                <label for="book_title" class="form-label">Título</label>
+                <input type="text" class="form-control" id="book_title" value="${data.title}" name="title" required>
+                <div class="invalid-feedback"> </div>
+            </div>
+            <div class="col-md-4">
+                <label for="book_author" class="form-label">Nombre de autor</label>
+                <input type="text" class="form-control" id="book_author" value="${data.author}" name="author" required>
+                <div class="invalid-feedback"> </div>
+            </div>
+            <div class="col-md-4">
+                <label for="book_price" class="form-label">Precio</label>
+                <input type="text" class="form-control" id="book_price" value="${data.price}" name="price" required>
                 <div class="invalid-feedback"> </div>
             </div>
 
-            <div class="col-12">
-                <div class="d-grid gap-2 col-md-3 mx-5 mx-md-0">
-                    <button class="btn btn-primary" type="submit">Registar</button>
+            <div class="col-12 text-center">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-4">
+                        <div class="d-grid mx-5 mx-md-0">
+                            <button class="btn btn-warning" type="submit">Actualizar</button>
+                        </div>
+                    </div>
+                    <div class="col-md-auto pt-2 pt-md-0">
+                        <div class="d-grid gap-2 mx-5 mx-md-0">
+                            <a id="form-cancel" class="btn btn-secondary px-1 px-md-4">Cancelar</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
 
     </div>`;
+}
 
 const testAddings = (ref = document) => {
     console.log({ref});
@@ -117,4 +140,38 @@ const testAddings = (ref = document) => {
     console.log(button);
 }
 
-export {Books, testAddings};
+const insertPageBook = async (ref = document) => {
+    ref.innerHTML = await Books()
+    let container = ref.querySelector("#container-books");
+
+
+    let btnsEdit = ref.querySelectorAll("table tr td [title='Editar']");
+    let btnsDelet = ref.querySelectorAll("table tr td [title='Eliminar']");
+    btnsEdit.forEach((button) => {
+        button.addEventListener("click", async(e) => {
+            let id  = button.dataset.id;
+            container.innerHTML = await editBook(id);
+            let form = container.querySelector("#form_edit");
+            let a = request(form,`./api/books/${id}`, {ref, insertPageBook});
+        })
+    });
+    btnsDelet.forEach((button) => {
+        button.addEventListener("click", async(e) => {
+            let id  = button.dataset.id;
+            let status = await fetch(`./api/books/${id}`, {method: 'DELETE'}).then(r => r.ok);
+            if (status) {
+                var row = button.parentNode.parentNode;
+                row.remove();
+            }
+        })
+    });
+
+    let button = ref.querySelector("#book-add-new");
+    button.addEventListener("click", () => {
+        container.innerHTML = newBook;
+        let form = container.querySelector("#form_new");
+        let a = request(form,"./api/books", {ref, insertPageBook});
+    });
+}
+
+export {Books, insertPageBook};

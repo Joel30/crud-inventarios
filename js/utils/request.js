@@ -12,7 +12,7 @@ async function redirect(form, rdr = false) {
     form.reset();
 }
 
-export function request(form, url, page) {
+export function request(form, url, {ref, insertPageBook}) {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = new FormData(form);
@@ -24,8 +24,10 @@ export function request(form, url, page) {
                 body: data
             }) .then(res => res.json())
 
+            console.log(result);
+
             if (!result.message) {
-                page.container.innerHTML = await page.Books();
+                insertPageBook(ref);
             }
         } catch (error) {
             console.log("Error");
@@ -33,5 +35,11 @@ export function request(form, url, page) {
         }
 
 
-    })
+    });
+
+    let btnCancel = form.querySelector("#form-cancel");
+    btnCancel.addEventListener("click", (e) => {
+        insertPageBook(ref);
+    });
+    
 }

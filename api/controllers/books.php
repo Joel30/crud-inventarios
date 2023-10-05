@@ -1,10 +1,11 @@
 <?php
 
-
 class Books
 {
-    private $db;
     private $name = "books";
+    private $name_msg = "Libros";
+
+    private $db;
     private $res;
     public function __construct()
     {
@@ -12,10 +13,7 @@ class Books
     }
 
     public function get(){
-
-
         try {
-
             $quer=$this->db->prepare("SELECT * FROM $this->name");
             $quer->execute();
             $req =  $quer->get_result();
@@ -30,46 +28,54 @@ class Books
         } catch (Throwable $th) {
             $this->res = [
                 "status" => 500,
-                "message" => "error al listar Libros",
+                "message" => "error al listar " . $this->name_msg,
                 "info" => $this->db->error,
             ];
         }
 
-        
         echo json_encode($this->res, http_response_code($this->res["status"]) | JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    // public function show($id){ 
-    //     try {        
-    //         $consulta = $this->db->query("SELECT * FROM product WHERE idproduct = $id");
-    //         $data = $this->db->assoc($consulta);
-    //         $this->res = [
-    //             "status" => 200,
-    //             "rows" => $this->db->rows($consulta),
-    //             "data" => $data,
-    //         ];
-    //     } catch (Throwable $th) {
-    //         $this->res = [
-    //             "status" => 500,
-    //             "message" => "error al listar product",
-    //             "info" => $this->db->error,
-    //         ];
-    //     }
-    //     echo json_encode($this->res, http_response_code($this->res["status"]));
-    // }
+    public function show($id){ 
+        try {
+            $quer=$this->db->prepare("SELECT * FROM $this->name WHERE id = $id");
+            $quer->execute();
+            $req =  $quer->get_result();
+
+            $data = $req->fetch_assoc();
+
+            $this->res = [
+                "status" => 200,
+                "rows" => $quer->affected_rows,
+                "data" => $data,
+            ];
+        } catch (Throwable $th) {
+            $this->res = [
+                "status" => 500,
+                "message" => "error al listar " . $this->name_msg,
+                "info" => $this->db->error,
+            ];
+        }
+
+        echo json_encode($this->res, http_response_code($this->res["status"]) | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
     
     public function create(){
 
-        $title = $_POST["title"];
-        $author = $_POST["author"];
-        $category = $_POST["category"];
-        $price = $_POST["price"];
+        require_once "getPost.php";
+        $value = getPost($_POST, $this->db, $this->name);
+
+        $insert_columns = $value["insert_columns"];
+        $value_columns = $value["value_columns"];
+        $prepare_marks = $value["prepare_marks"];
+        $bind_types = $value["bind_types"];
 
         try {
-            $quer=$this->db->prepare("INSERT INTO books (title, author, category, price) VALUES (?, ?, ?, ?)");
-            $quer->bind_param("ssss", $title, $author, $category, $price);
+            $quer=$this->db->prepare("INSERT INTO $this->name ($insert_columns) VALUES ($prepare_marks)");
+            $quer->bind_param($bind_types, ...$value_columns);
             $quer->execute();
 
             $this->res = [
@@ -81,93 +87,65 @@ class Books
         } catch (Throwable $th) {
             $this->res = [
                 "status" => 500,
-                "message" => "error al insertar Libros",
+                "message" => "error al insertar " . $this->name_msg,
                 "info" => $this->db->error,
             ]; 
         }
-        echo json_encode($this->res, http_response_code($this->res["status"]));
+        echo json_encode($this->res, http_response_code($this->res["status"]) | JSON_UNESCAPED_UNICODE);
+        exit;
     }
 
-//     public function edit($id_product){        
-//         $objectV = new Validation("product");
-//         $res_v = $objectV->isNumber($id_product, "id");
-//         if ($res_v !== true){
-//             echo json_encode($res_v, http_response_code($res_v["status"]));
-//             return;
-//         }
+    public function edit($id){    
 
-//         $rules = [
-//             "nameproduct" => ["require"],
-//             "codeproduct" => ["require", "string"],
-//             "detailsproduct" => ["require", "string"],
-//             "subcategory_idsubcategory" => ["require", "number"]
-//         ];
+        require_once "getPost.php";
+        $value = getPost($_POST, $this->db, $this->name, $id);
 
-//         $table_columns = $objectV->getColumsData();
-    
-//         $validValues = $objectV->validValuesInsertion($table_columns, "PUT");
-//         $form_fields = $validValues["form_fields"];
-//         $value_marks = $validValues["value_columns"];
-//         $prepare_marks = $validValues["prepare_marks"];
-//         $bind_types = $validValues["bind_types"];
+        $value_columns = $value["value_columns"];
+        $prepare_marks = $value["prepare_marks"];
+        $bind_types = $value["bind_types"];
 
-//         array_push($value_marks, $id_product);
+        try {
+            $quer=$this->db->prepare("UPDATE $this->name SET $prepare_marks WHERE id = ?");
+            $quer->bind_param($bind_types, ...$value_columns);
+            $quer->execute();
 
-//         $errors = $objectV->validate($rules, $form_fields, $table_columns);
+            $this->res = [
+                "status" => 200, 
+                "affected_rows" => $quer->affected_rows,
+                "id" => $id,
+                "data" => []
+            ];
+        } catch (Throwable $th) {
+            $this->res = [
+                "status" => 500,
+                "message" => "error al actualizar " . $this->name_msg,
+                "info" => $this->db->error,
+            ]; 
+        }
+        echo json_encode($this->res, http_response_code($this->res["status"]) | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
-//         if ($errors) {
-//             $this->res = $errors;
-//         } else {
-//             try {
-//                 $quer=$this->db->prepare("UPDATE product SET $prepare_marks WHERE idproduct = ?");
-//                 $quer->bind_param($bind_types."i", ...$value_marks);
-//                 $quer->execute();
+    public function delete($id){
+        try {
+            $quer=$this->db->prepare("DELETE FROM $this->name WHERE id = ?");
+            $quer->bind_param("i", $id);
+            $quer->execute();
 
-//                 $this->res = [
-//                     "status" => 200, 
-//                     "affected_rows" => $quer->affected_rows,
-//                     "id" => $id_product,
-//                     "data" => $form_fields
-//                 ];
-//             } catch (Throwable $th) {
-//                 $this->res = [
-//                     "status" => 500,
-//                     "message" => "error al actualizar product",
-//                     "info" => $this->db->error,
-//                 ]; 
-//             }
-//         }
-//         echo json_encode($this->res, http_response_code($this->res["status"]));
-
-//     }
-
-//     public function delete($id_product){
-//         $objectV = new Validation("product");
-//         $res_v = $objectV->isNumber($id_product, "id");
-//         if ($res_v !== true){
-//             echo json_encode($res_v, http_response_code($res_v["status"]));
-//             return;
-//         }
-
-//         try {
-//             $quer=$this->db->prepare("DELETE FROM product WHERE idproduct = ?");
-//             $quer->bind_param("i", $id_product);
-//             $quer->execute();
-
-//             $this->res = [
-//                 "status" => 200, 
-//                 "affected_rows" => $quer->affected_rows,
-//                 "id" => $id_product,
-//             ];
-//         } catch (Throwable $th) {
-//             $this->res = [
-//                 "status" => 500,
-//                 "message" => "error al eliminar product",
-//                 "info" => $this->db->error,
-//             ]; 
-//         }
-//         echo json_encode($this->res, http_response_code($this->res["status"]));
-//     }
+            $this->res = [
+                "status" => 200, 
+                "affected_rows" => $quer->affected_rows,
+                "id" => $id,
+            ];
+        } catch (Throwable $th) {
+            $this->res = [
+                "status" => 500,
+                "message" => "error al eliminar " . $this->name_msg,
+                "info" => $this->db->error,
+            ]; 
+        }
+        echo json_encode($this->res, http_response_code($this->res["status"]) | JSON_UNESCAPED_UNICODE);
+    }
 }
 
 ?>
