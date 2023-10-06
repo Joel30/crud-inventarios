@@ -3,5 +3,5 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME}  -f [OR]
 RewriteCond %{REQUEST_FILENAME} !-f
 
-RewriteBase /prueba/api/
+RewriteBase /inventarios/api/
 RewriteRule ^(.*)$ index.php?url=$1 [L,QSA]

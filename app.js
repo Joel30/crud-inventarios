@@ -3,6 +3,7 @@ import {Navbar, activateItem} from "./js/components/Navbar.js"
 import Warehouse from "./js/pages/Warehouse.js";
 import Categories from "./js/pages/Category.js";
 import Articles from "./js/pages/Articles.js";
+import Sales from "./js/pages/Sales.js";
 
 const app = document.getElementById("app");
 
@@ -31,6 +32,9 @@ if (current) {
     if (current == "ni-articles") {
         Articles(container);
     }
+    if (current == "ni-sales") {
+        Sales(container);
+    }
 } else {
     container.innerHTML = Home;
 }
@@ -40,7 +44,7 @@ const addEvents = () => {
     let itemWarehouse = document.getElementById("ni-warehouse");
     let itemCategories = document.getElementById("ni-category");
     let itemArticles = document.getElementById("ni-articles");
-    let itemBooks = document.getElementById("ni-books");
+    let itemVentas = document.getElementById("ni-sales");
 
     let currentPage = "";
 
@@ -82,11 +86,22 @@ const addEvents = () => {
         e.preventDefault();
         if (e.target.id != currentPage) {
             currentPage = e.target.id;
-            
+
             localStorage.setItem("current", currentPage);
             activateItem(currentPage);
 
             Articles(container);
+        }
+    });
+    itemVentas.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (e.target.id != currentPage) {
+            currentPage = e.target.id;
+
+            localStorage.setItem("current", currentPage);
+            activateItem(currentPage);
+
+            Sales(container);
         }
     });
     

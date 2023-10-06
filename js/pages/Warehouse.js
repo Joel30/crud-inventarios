@@ -29,7 +29,7 @@ let table =  (data) => {
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="list_category">
+                <tbody>
                 ${
                     rows ? rows : `<tr> <td colspan="100%" class="text-center" >No se encontraron registros</td></tr>`
                 }
@@ -46,9 +46,9 @@ let listWarehouse = async () => {
         <h4 class="pb-2 ps-3">Almacen</h4>
         
         <div class="card">
-            <div class="card-body" id="container-books">
+            <div class="card-body" id="container-page">
                 <div class="text-end mb-3">
-                    <button id="book-add-new" class="btn btn-sm btn-success">
+                    <button id="page-add-new" class="btn btn-sm btn-success">
                         <i class="bi bi-plus-lg"></i> 
                         Nuevo
                     </button>
@@ -132,7 +132,7 @@ let editWarehouse = async(id) => {
 
 const Warehouse = async (ref = document) => {
     ref.innerHTML = await listWarehouse()
-    let container = ref.querySelector("#container-books");
+    let container = ref.querySelector("#container-page");
 
 
     let btnsEdit = ref.querySelectorAll("table tr td [title='Editar']");
@@ -142,7 +142,7 @@ const Warehouse = async (ref = document) => {
             let id  = button.dataset.id;
             container.innerHTML = await editWarehouse(id);
             let form = container.querySelector("#form_edit");
-            let a = request(form,`${URL}${id}`, {ref, insertPageBook: Warehouse});
+            request(form,`${URL}${id}`, ref, Warehouse);
         })
     });
     btnsDelet.forEach((button) => {
@@ -156,11 +156,11 @@ const Warehouse = async (ref = document) => {
         })
     });
 
-    let button = ref.querySelector("#book-add-new");
+    let button = ref.querySelector("#page-add-new");
     button.addEventListener("click", () => {
         container.innerHTML = newWarehouse;
         let form = container.querySelector("#form_new");
-        request(form,`${URL}`, {ref, insertPageBook: Warehouse});
+        request(form,`${URL}`, ref, Warehouse);
     });
 }
 

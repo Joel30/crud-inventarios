@@ -5,7 +5,7 @@ export default async function selectData(path, col, id = false, text="Elija un o
             let select = ``;
             if(!data.data || data.data.length === 0){
                 select = "<option value> -- No hay registros -- </option>"
-                return;
+                return select;
             }
 
             select += `<option value> -- ${text} -- </option>`;

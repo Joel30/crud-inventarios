@@ -1,4 +1,4 @@
-export function request(form, url, {ref, insertPageBook}) {
+export function request(form, url, ref, insertPage) {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = new FormData(form);
@@ -13,7 +13,7 @@ export function request(form, url, {ref, insertPageBook}) {
             console.log(result);
 
             if (!result.message) {
-                insertPageBook(ref);
+                insertPage(ref);
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -22,6 +22,6 @@ export function request(form, url, {ref, insertPageBook}) {
 
     let btnCancel = form.querySelector("#form-cancel");
     btnCancel.addEventListener("click", (e) => {
-        insertPageBook(ref);
+        insertPage(ref);
     });
 }

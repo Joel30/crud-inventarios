@@ -65,24 +65,16 @@ class Sales
     
     public function create(){
 
-        require_once "getPost.php";
-        $value = getPost($_POST, $this->db, $this->name);
-
-        $insert_columns = $value["insert_columns"];
-        $value_columns = $value["value_columns"];
-        $prepare_marks = $value["prepare_marks"];
-        $bind_types = $value["bind_types"];
-
         try {
-            $quer=$this->db->prepare("INSERT INTO $this->name ($insert_columns) VALUES ($prepare_marks)");
-            $quer->bind_param($bind_types, ...$value_columns);
+            $fecha = date("Y-m-d H:i:s");
+        
+            $quer=$this->db->prepare("INSERT INTO ventas (fecha) VALUES ('$fecha')");
             $quer->execute();
-
+            
             $this->res = [
                 "status" => 200, 
                 "affected_rows" => $quer->affected_rows, 
                 "id" => $quer->insert_id, 
-                "data" => []
             ];
         } catch (Throwable $th) {
             $this->res = [

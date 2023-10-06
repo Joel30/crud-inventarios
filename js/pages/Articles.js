@@ -19,6 +19,7 @@ let table =  (data) => {
             <td>${column.nombre}</td>
             <td>${column.descripcion}</td>
             <td>${column.precio}</td>
+            <td>${column.stock}</td>
             <td>${column.nombre_almacen}</td>
             <td>${column.nombre_categoria}</td>
             <td nowrap>${actions}</td>
@@ -32,12 +33,13 @@ let table =  (data) => {
                         <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Precio</th>
+                        <th>Stock</th>
                         <th>Almacen</th>
                         <th>Categoría</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="list_category">
+                <tbody>
                 ${
                     rows ? rows : `<tr> <td colspan="100%" class="text-center" >No se encontraron registros</td></tr>`
                 }
@@ -54,9 +56,9 @@ let listArticles = async () => {
         <h4 class="pb-2 ps-3">Artículos</h4>
         
         <div class="card">
-            <div class="card-body" id="container-books">
+            <div class="card-body" id="container-page">
                 <div class="text-end mb-3">
-                    <button id="book-add-new" class="btn btn-sm btn-success">
+                    <button id="page-add-new" class="btn btn-sm btn-success">
                         <i class="bi bi-plus-lg"></i> 
                         Nuevo
                     </button>
@@ -86,10 +88,15 @@ let newArticle = async() => `
                 <div class="invalid-feedback"> </div>
             </div>
             <div class="col-md-4">
+                <label for="art_stock" class="form-label">Stock</label>
+                <input type="number" class="form-control" id="art_stock" name="stock" required>
+                <div class="invalid-feedback"> </div>
+            </div>
+            <div class="col-md-4">
                 <label for="art_wh_id" class="form-label">Almacen</label>
                 <select id="art_wh_id" class="form-select" name="almacen_id">
                     ${
-                        await selectData(`./api/warehouse/available`, {id: "id", name:"nombre"})
+                        await selectData(`./api/warehouse/available`, {id: "id", name:"nombre"}) 
                     }
                 </select>
                 <div class="invalid-feedback"> </div>
@@ -147,6 +154,11 @@ let editArticle = async(id) => {
                 <div class="invalid-feedback"> </div>
             </div>
             <div class="col-md-4">
+                <label for="art_stock" class="form-label">Stock</label>
+                <input type="number" step="any" class="form-control" id="art_stock" value="${data.stock}" name="stock" required>
+                <div class="invalid-feedback"> </div>
+            </div>
+            <div class="col-md-4">
                 <label for="art_wh_id" class="form-label">Almacen</label>
                 <select id="art_wh_id" class="form-select" name="almacen_id">
                     ${
@@ -186,7 +198,7 @@ let editArticle = async(id) => {
 
 const Articles = async (ref = document) => {
     ref.innerHTML = await listArticles()
-    let container = ref.querySelector("#container-books");
+    let container = ref.querySelector("#container-page");
 
 
     let btnsEdit = ref.querySelectorAll("table tr td [title='Editar']");
@@ -196,13 +208,13 @@ const Articles = async (ref = document) => {
             let id  = button.dataset.id;
             container.innerHTML = await editArticle(id);
             let form = container.querySelector("#form_edit");
-            let a = request(form,`${URL}${id}`, {ref, insertPageBook: Articles});
+            request(form,`${URL}${id}`, ref, Articles);
         })
     });
     btnsDelet.forEach((button) => {
         button.addEventListener("click", async(e) => {
             let id  = button.dataset.id;
-            let status = await fetch(`${URL}${id}`, {method: 'DELETE'}).then(r => {console.log(r); return r.ok;});
+            let status = await fetch(`${URL}${id}`, {method: 'DELETE'}).then(r => r.ok);
             if (status) {
                 var row = button.parentNode.parentNode;
                 row.remove();
@@ -210,11 +222,11 @@ const Articles = async (ref = document) => {
         })
     });
 
-    let button = ref.querySelector("#book-add-new");
+    let button = ref.querySelector("#page-add-new");
     button.addEventListener("click", async() => {
         container.innerHTML = await newArticle();
         let form = container.querySelector("#form_new");
-        request(form,`${URL}`, {ref, insertPageBook: Articles});
+        request(form,`${URL}`, ref, Articles);
     });
 }
 

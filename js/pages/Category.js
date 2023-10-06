@@ -31,7 +31,7 @@ let table =  (data) => {
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="list_category">
+                <tbody">
                 ${
                     rows ? rows : `<tr> <td colspan="100%" class="text-center" >No se encontraron registros</td></tr>`
                 }
@@ -48,9 +48,9 @@ let listCategories = async () => {
         <h4 class="pb-2 ps-3">Categorías</h4>
         
         <div class="card">
-            <div class="card-body" id="container-books">
+            <div class="card-body" id="container-page">
                 <div class="text-end mb-3">
-                    <button id="book-add-new" class="btn btn-sm btn-success">
+                    <button id="page-add-new" class="btn btn-sm btn-success">
                         <i class="bi bi-plus-lg"></i> 
                         Nuevo
                     </button>
@@ -134,7 +134,7 @@ let editCategory = async(id) => {
 
 const Categories = async (ref = document) => {
     ref.innerHTML = await listCategories()
-    let container = ref.querySelector("#container-books");
+    let container = ref.querySelector("#container-page");
 
 
     let btnsEdit = ref.querySelectorAll("table tr td [title='Editar']");
@@ -144,7 +144,7 @@ const Categories = async (ref = document) => {
             let id  = button.dataset.id;
             container.innerHTML = await editCategory(id);
             let form = container.querySelector("#form_edit");
-            let a = request(form,`${URL}${id}`, {ref, insertPageBook: Categories});
+            request(form,`${URL}${id}`, ref, Categories);
         })
     });
     btnsDelet.forEach((button) => {
@@ -152,17 +152,17 @@ const Categories = async (ref = document) => {
             let id  = button.dataset.id;
             let status = await fetch(`${URL}${id}`, {method: 'DELETE'}).then(r => r.ok);
             if (status) {
-                var row = button.parentNode.parentNode;
+                let row = button.parentNode.parentNode;
                 row.remove();
             }
         })
     });
 
-    let button = ref.querySelector("#book-add-new");
+    let button = ref.querySelector("#page-add-new");
     button.addEventListener("click", () => {
         container.innerHTML = newCategory;
         let form = container.querySelector("#form_new");
-        request(form,`${URL}`, {ref, insertPageBook: Categories});
+        request(form,`${URL}`, ref, Categories);
     });
 }
 

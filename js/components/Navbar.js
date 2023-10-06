@@ -1,7 +1,7 @@
 export const Navbar = () => {
     return  `<nav class="navbar navbar-expand-lg" style="background-color: #196993;" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand pe-4" href="#">Librería</a>
+            <a class="navbar-brand pe-4" href="#">Inventarios</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -9,16 +9,19 @@ export const Navbar = () => {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a id="ni-home", class="nav-link active" href="./">Home</a>
+                        <a id="ni-home", class="nav-link active" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a id="ni-warehouse", class="nav-link" href="/almacen">Almacen</a>
+                        <a id="ni-warehouse", class="nav-link" href="#">Almacen</a>
                     </li>
                     <li class="nav-item">
-                        <a id="ni-category", class="nav-link" href="/almacen">Categorias</a>
+                        <a id="ni-category", class="nav-link" href="#">Categorias</a>
                     </li>
                     <li class="nav-item">
-                        <a id="ni-articles", class="nav-link" href="/almacen">Artículos</a>
+                        <a id="ni-articles", class="nav-link" href="#">Artículos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="ni-sales", class="nav-link" href="#">Ventas</a>
                     </li>
                 </ul>
             </div>

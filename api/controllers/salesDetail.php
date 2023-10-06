@@ -62,6 +62,33 @@ class SalesDetail
         exit;
     }
 
+    public function showBySales($sales_id){ 
+        try {
+            $name_art = "(SELECT nombre FROM articulos WHERE id = $this->name.articulos_id) AS nombre_articulo";
+
+            $quer=$this->db->prepare("SELECT *, $name_art FROM $this->name WHERE ventas_id = $sales_id");
+            $quer->execute();
+            $req =  $quer->get_result();
+
+            $data = $req->fetch_all(MYSQLI_ASSOC);
+
+            $this->res = [
+                "status" => 200,
+                "rows" => $quer->affected_rows,
+                "data" => $data,
+            ];
+        } catch (Throwable $th) {
+            $this->res = [
+                "status" => 500,
+                "message" => "error al listar " . $this->name_msg,
+                "info" => $this->db->error,
+            ];
+        }
+
+        echo json_encode($this->res, http_response_code($this->res["status"]) | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     
     public function create(){
 
@@ -74,9 +101,17 @@ class SalesDetail
         $bind_types = $value["bind_types"];
 
         try {
+
             $quer=$this->db->prepare("INSERT INTO $this->name ($insert_columns) VALUES ($prepare_marks)");
             $quer->bind_param($bind_types, ...$value_columns);
             $quer->execute();
+
+            if ($quer->affected_rows) {
+                $newStock = (int) $_POST["currentstock"] - (int)$_POST["cantidad"];
+                $art_id = $_POST["articulos_id"];
+                $querArt=$this->db->prepare("UPDATE articulos SET stock = '$newStock'  WHERE id = $art_id");
+                $querArt->execute();
+            }
 
             $this->res = [
                 "status" => 200, 

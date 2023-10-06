@@ -13,6 +13,10 @@
     }
 
     if($method == "GET"){
+        if(preg_match('/^sales,\d+$/', $my_route)){
+            $object->showBySales($rutas[1]);
+            return;
+        }
         if(preg_match('/^\d+$/', $my_route)){
             $object->show($rutas[0]);
             return;
